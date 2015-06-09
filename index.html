@@ -8,63 +8,86 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bitcoin-address-lib.js"></script>
+    <script type="text/javascript" src="js/bitcoin-address.js"></script>
+    <script type="text/javascript" src="js/bitcoin-code.js"></script>
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">The Song Download</h1>
-      <h2 class="project-tagline">Download for The Song if a contribution has been made to a bitcoin address.</h2>
-      <a href="https://github.com/rmtmckenzie/song-bitcoin-download" class="btn">View on GitHub</a>
-      <a href="https://github.com/rmtmckenzie/song-bitcoin-download/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/rmtmckenzie/song-bitcoin-download/tarball/master" class="btn">Download .tar.gz</a>
+        <h1 class="project-name">Dash's Song Download</h1>
+        <h2 class="project-tagline">Download for The Song if a contribution has been made to a bitcoin address.</h2>
+        <p><img src="media/equalizer.png" height="200px" alt="Equalizer picture"></p>
     </section>
 
     <section class="main-content">
-      <h3>
-<a id="welcome-to-dashs-song-download-page" class="anchor" href="#welcome-to-dashs-song-download-page" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to Dash's Song download page.</h3>
+        <h3>
+            <a id="welcome-to-dashs-song-download-page" class="anchor" href="#welcome-to-dashs-song-download-page" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to Dash's Song download page.
+        </h3>
 
-<p>The song is downloadable as part of a choose-your-price model using Bitcoins. </p>
+        <p>
+            The song is downloadable as part of a choose-your-price model using Bitcoins. 
+        </p>
 
-<p>If you haven't heard of Bitcoin, please visit <a href="https://bitcoin.org/">Bitcoin.org</a>. It is a modern currency built on the principles of security and openness. To get the song, you'l need to register for a wallet and buy some bitcoins.
-1. Choose a wallet (the best source is information is <a href="https://bitcoin.org/en/choose-your-wallet">Bitcoin.org's wallet choosing page</a>.
-2. Buy some bitcoins (<a href="http://howtobuybitcoins.info/">this</a> is a good place to find out how)
-Now that's done, you can use your bitcoins at many online and some real-world merchants! See <a href="http://www.wheretospendbitcoins.co.uk/">this page</a> for the UK, or try <a href="https://google.com/search?q=where+to+buy+bitcoins">this search</a>.</p>
+        <p>
+            If you haven't heard of Bitcoin, please visit <a href="https://bitcoin.org/">Bitcoin.org</a>. It is a modern currency built on the principles of security and openness. To get the song, you'll need to register for a wallet and buy some bitcoins.
+        
+            <ol>
+                <li>
+                    Choose a wallet (the best source is information is <a href="https://bitcoin.org/en/choose-your-wallet">Bitcoin.org's wallet choosing page</a>.
+                </li>
+                <li>
+                    Buy some bitcoins (<a href="http://howtobuybitcoins.info/">this</a> is a good place to find out how)
+                </li>
+            </ol>
+        </p>
+        
+        <p>
+            Now that's done, you can use your bitcoins at many online and some real-world merchants! See <a href="http://www.wheretospendbitcoins.co.uk/">this page</a> for the UK, or try <a href="https://google.com/search?q=where+to+buy+bitcoins">this search</a>.
+        </p>
+        
+        <p>
+            To get the song, follow these simple steps:
+            <ol>
+                <li>
+                    Using your bitcoin wallet, create a transaction to this address:
+                    <p class="fix-margin-ol text-center"><code>1PZ5ebvdt43dvRRgRNgBhsq2PwAKN4X6W</code></p>
+                    <p class="fix-margin-ol text-center"><img src="https://rnli.org/howtosupportus/donatenow/Documents/RNLI-BitcoinWallet-QR.jpg" alt="RNLI Bitcoin Address QR Code"></p>
+                </li>
+                <li>
+                    Enter your bitcoin address here:
+                    <p class="fix-margin-ol text-center">
+                        <input type="text" name="bitcoin-donator-address" placeholder="Your address here.">
+                    </p>
+                </li>
+            </ol>
+        </p>
+        <p>
+            When your address has been verified, you'll be able to download the song from here:
+        </p>
+        <div id="" class="text-center">
+            <button id="song-download-button" disabled="true">Download</button>
+        </div>
 
-<p>To get the song, follow these simple steps:
-1. Using your bitcoin wallet, create a transaction to this address:</p>
+        <footer class="site-footer">
+            <span class="site-footer-owner"><a href="https://github.com/rmtmckenzie/song-bitcoin-download">The Song Download</a> is maintained by <a href="https://github.com/rmtmckenzie">rmtmckenzie</a>.</span>
 
-<p><code>1PZ5ebvdt43dvRRgRNgBhsq2PwAKN4X6W</code></p>
-
-<p><img src="https://rnli.org/howtosupportus/donatenow/Documents/RNLI-BitcoinWallet-QR.jpg" alt="RNLI Bitcoin Address QR Code"></p>
-
-<ol>
-<li>Enter your bitcoin address here:
-</li>
-</ol>
-
-<h3>
-<a id="3rd-part-contributions" class="anchor" href="#3rd-part-contributions" aria-hidden="true"><span class="octicon octicon-link"></span></a>3rd Part Contributions</h3>
-
-<p>Made using <a href="https://github.com/LUXSTACK/razrbit-sdk-javascript">https://github.com/LUXSTACK/razrbit-sdk-javascript</a></p>
-
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/rmtmckenzie/song-bitcoin-download">The Song Download</a> is maintained by <a href="https://github.com/rmtmckenzie">rmtmckenzie</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
+            <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+            <span class="site-footer-credits">This page uses the <a href="https://github.com/LUXSTACK/razrbit-sdk-javascript">LUXSTACK razrbit</a> library and SDK.</span>
+        </footer>
 
     </section>
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-38749733-4', 'auto');
+        ga('send', 'pageview');
+    </script>
 
-            <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-38749733-4");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
-
+    </script>
   </body>
 </html>
 
