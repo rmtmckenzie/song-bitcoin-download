@@ -24,8 +24,9 @@ BigInteger.prototype.toByteArrayUnsigned = function () {
         return ba;
 };        
 
-var Bitcoin = {};
+var check_address;
 (function () {
+    var Bitcoin = {};
     var B58 = Bitcoin.Base58 = {
         alphabet: "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
         base: BigInteger.valueOf(58),
@@ -47,35 +48,37 @@ var Bitcoin = {};
             return bytes;
         }
     };
+    
+    
+    Bitcoin.Address = function (bytes) {
+        if ("string" == typeof bytes)
+            bytes = Bitcoin.Address.decodeString(bytes);
+        this.hash = bytes;
+        this.version = Bitcoin.Address.networkVersion;
+    };
+    Bitcoin.Address.networkVersion = 0x00; // mainnet
+    Bitcoin.Address.decodeString = function (string) {
+        var bytes = Bitcoin.Base58.decode(string);
+        var hash = bytes.slice(0, 21);
+        var checksum = Crypto.SHA256(Crypto.SHA256(hash, { asBytes: true }), { asBytes: true });
+        if (checksum[0] != bytes[21] ||
+            checksum[1] != bytes[22] ||
+            checksum[2] != bytes[23] ||
+            checksum[3] != bytes[24])
+            throw "Checksum validation failed!";
+        var version = hash.shift();
+        if (version != 0)
+            throw "Version " + version + " not supported!";
+        return hash;
+    };
+    check_address = function (address) {
+        try {
+            Bitcoin.Address(address);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
 })();
 
-Bitcoin.Address = function (bytes) {
-    if ("string" == typeof bytes)
-        bytes = Bitcoin.Address.decodeString(bytes);
-    this.hash = bytes;
-    this.version = Bitcoin.Address.networkVersion;
-};
-Bitcoin.Address.networkVersion = 0x00; // mainnet
-Bitcoin.Address.decodeString = function (string) {
-    var bytes = Bitcoin.Base58.decode(string);
-    var hash = bytes.slice(0, 21);
-    var checksum = Crypto.SHA256(Crypto.SHA256(hash, { asBytes: true }), { asBytes: true });
-    if (checksum[0] != bytes[21] ||
-        checksum[1] != bytes[22] ||
-        checksum[2] != bytes[23] ||
-        checksum[3] != bytes[24])
-        throw "Checksum validation failed!";
-    var version = hash.shift();
-    if (version != 0)
-        throw "Version " + version + " not supported!";
-    return hash;
-};
 
-function check_address(address) {
-    try {
-        Bitcoin.Address(address);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
