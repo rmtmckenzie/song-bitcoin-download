@@ -309,7 +309,6 @@ button {
   box-shadow: 0 0 0 0 rgba(232, 76, 61, 0.7);
   border-radius: 50%;
   background-color: #e84c3d;
-/*  background-image: url(YOUR-URL-IMAGE.png);*/
   background-size:cover;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -322,6 +321,7 @@ button {
   transition: height 0.25s ease-in, opacity 0.25s ease-in;
   opacity: 1.0;
 }
+
 
 button.no-address
 {
