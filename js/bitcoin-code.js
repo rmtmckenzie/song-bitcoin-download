@@ -15,7 +15,8 @@
             both_buttons.removeAttr("disabled");
             download_button.click(function(e) {
                 e.preventDefault();  //stop the browser from following
-                window.location.href = Settings.download_location;
+                //window.location.href = Settings.download_location;
+                alert("The song would start downloading now on the real site.")
             })
         }
         
