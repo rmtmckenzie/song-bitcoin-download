@@ -1,49 +1,108 @@
 (function() {
     
-    var setup = function() {
-        var download_button = $(Settings.download_button);
-        var play_button = $(Settings.play_button);
-        var both_buttons = $(Settings.download_button + "," + Settings.play_button);
-        var address_input = $(Settings.address_input);
-        var earliest_date = new Date(Settings.earliest_date);
-        var timed_task;
-        
-        $(Settings.donate_address_display).text(Settings.donate_address);
-        
-        function setDownloadActive() {
-            both_buttons.removeClass("no-address");
-            both_buttons.removeAttr("disabled");
-            download_button.click(function(e) {
-                e.preventDefault();  //stop the browser from following
-                //window.location.href = Settings.download_location;
-                alert("The song would start downloading now on the real site.")
-            })
-        }
-        
-        function getEarliestTransaction(transactions) {
+    
+    function getEarliestTransaction(transactions) {
             return transactions[transactions.length - 1];
-        }
-        
-        function addressInTransactions(address, transactions) {
-            for(var i = 0, e = transactions.length; i < e; tx = ++i) {
-                var tx = transactions[i];
-                if ($.inArray(address, tx["addresses"]) != -1) {
-                    setDownloadActive();
-                    return true;
-                }
+    }
+    
+    function addressInTransactions(address, transactions) {
+        for(var i = 0, e = transactions.length; i < e; tx = ++i) {
+            var tx = transactions[i];
+            if ($.inArray(address, tx["addresses"]) != -1) {
+                return true;
             }
-            return false;
         }
-        
-        function isBeforeEarliest(transactions) {
+        return false;
+    }
+ 
+    function startTimed(callback, time) {
+        return setInterval(function() {
+            callback();
+        }, time);
+    }
+    
+    var nothing = function(){};
+ 
+    var BitcoinChecker = {
+        addressInvalid: nothing,
+        addressValid: nothing,
+        downloadEnabled: nothing,
+        downloadDisabled: nothing,
+        downloadClicked: nothing
+    }
+    
+    BitcoinChecker = {
+        addressInvalid: function() {console.log("invalid");},
+        addressValid: function() {console.log("valid");},
+        downloadEnabled: function() {console.log("enabled");},
+        downloadDisabled: function() {console.log("disabled");},
+        downloadClicked: function() {console.log("clicked");}
+    }
+    
+    var Bitcoin = {
+        setup: function() {
+            var _this = this;
+            $(Settings.address_input).on("input", function() {
+                var val = $(this).val();
+                if(check_address_is_bitcoin(val)) {
+                    //valid
+                    _this.addressValid(val);
+
+                } else {
+                    //invalid
+                    _this.addressInvalid();
+                }
+            });
+            
+        },
+        addressValid: function(val) {
+            this.address_valid = true;
+            BitcoinChecker.addressValid();
+            $(Settings.address_input).removeClass("invalid").addClass("valid");
+            $(Settings.download_button).removeClass("no-address");
+            clearInterval(this.timed_task); // in case go from valid to valid
+            this.findAddrInAllTransactions(val);
+        },
+        addressInvalid: function() {
+            if (this.address_valid) {
+                this.address_valid = false;
+                BitcoinChecker.addressInvalid();
+                $(Settings.address_input).addClass("invalid").removeClass("valid");
+                $(Settings.download_button).addClass("no-address");
+                this.disableDownload();
+                clearInterval(this.timed_task);
+            }
+        },
+        enableDownload: function() {
+            this.download_enabled = true;
+            BitcoinChecker.downloadEnabled();
+            $(Settings.download_button)
+                .removeClass("no-address")
+                .removeAttr("disabled")
+                .click(function(e) {
+                    e.preventDefault();  //stop the browser from following
+                    BitcoinChecker.downloadClicked();
+                    //window.location.href = Settings.download_location;
+                    alert("The song would start downloading now on the real site.")
+                });
+        },
+        disableDownload: function() {
+            if (this.download_enabled) {
+                this.download_enabled = false;
+                BitcoinChecker.downloadDisabled();
+                $(Settings.download_button)
+                    .off("click")
+                    .attr("disabled","true");
+            }
+        },
+        isBeforeEarliest: function(transactions) {
             var tx = getEarliestTransaction(transactions);
-            return new Date(tx["confirmed"]) < earliest_date;
-        }
-        
-        function doFind (userAddr, callback, more) {
+            return new Date(tx["confirmed"]) < new Date(Settings.earliest_date);
+        },
+        doFind: function(userAddr, callback, more) {
             var args;
-            if (Settings && Settings.token) {
-                args = { token: Settings.token };
+            if (BitcoinChecker.token) {
+                args = { token: BitcoinChecker.token };
             } else {
                 args = {};
             }
@@ -51,94 +110,42 @@
             if (more) { args["before"] = more; }
             
             $.get("http://api.blockcypher.com/v1/btc/main/addrs/" + userAddr + "/full", args, callback);
-        }
-        
-        function startTimedTask(userAddr) {
-            var addr = userAddr;
-            timed_task = setInterval(function() {
-                console.log("Checking for new transactions.");
-                findAddrInNewestTransactions(addr);
-            }, 120000);
-        }
-       
-        
-        function findAddrInNewestTransactions(userAddr) {
-            doFind(userAddr, function(data) {
+        },
+        findAddrInNewestTransactions: function(userAddr) {
+            var _this = this;
+            this.doFind(userAddr, function(data) {
                 var transactions = data["txs"];
                 if(addressInTransactions(Settings.donate_address, transactions)) {
-                    setDownloadActive();
+                    _this.enableDownload();
                     console.log("Transaction found between " + userAddr + " and " + Settings.donate_address);
-                    clearInterval(timed_task);
+                    clearInterval(_this.timed_task);
                 }
             });
-        }
-        
-        function findAddrInAllTransactions(userAddr) {
+        },
+        findAddrInAllTransactions: function(userAddr) {
+            var _this = this;
             function continueFinding(data) {
                 var transactions = data["txs"];
                 if(addressInTransactions(Settings.donate_address, transactions)) {
-                    setDownloadActive();
+                    _this.enableDownload();
                     console.log("Transaction found between " + userAddr + " and " + Settings.donate_address);
                 } else {
-                    if (data["hasMore"] && transactions && !isBeforeEarliest(transactions)) {
+                    if (data["hasMore"] && transactions && !_this.isBeforeEarliest(transactions)) {
                         //didn't return so hasn't found address
-                        var lastTx = transactions[transactions.length - 1];
-                        doFind(userAddr, continueFinding, getEarliestTransaction(transactions)["block_height"]);
+                        _this.doFind(userAddr, continueFinding, getEarliestTransaction(transactions)["block_height"]);
                     } else {
                         console.log("No transactions found between " + userAddr + " and " + Settings.donate_address);
-                        startTimedTask(userAddr);
+                        _this.timed_task = startTimed(function() {
+                            _this.findAddrInNewestTransactions(userAddr);
+                        }, 120000);
                     }
                 }
             }
-            
-            doFind(userAddr, continueFinding);
+            this.doFind(userAddr, continueFinding);
         }
-        
-        address_input.on("input", function() {
-            var val = $(this).val();
-            if(check_address(val)) {
-                //valid
-                address_input.removeClass("invalid");
-                address_input.addClass("valid");
-                both_buttons.removeClass("no-address");
-                
-                findAddrInAllTransactions(val);
-            } else {
-                //invalid
-                address_input.addClass("invalid");
-                address_input.removeClass("valid");
-                both_buttons.addClass("no-address");
-                clearInterval(timed_task);
-            }
-        });
-    };
-    
-    
-    function set_defaults(obj) {
-        Settings.download_button = Settings.download_button || "#song-download-button";
-        Settings.play_button = Settings.play_button || "#song-play-button"
-        Settings.address_input = Settings.address_input || "#bitcoin-donator-address";
-        Settings.donate_address_display = Settings.donate_address_display || "#donate-address";
-        Settings.donate_address = Settings.donate_address || "1PZ5ebvdt43dvRRgRNgBhsq2PwAKN4X6W";
-        Settings.earliest_date = Settings.earliest_date || "2015-06-01";
-        Settings.download_location = Settings.download_location || "http://freedownloads.last.fm/download/626522452/Flow.mp3";
     }
-
-    if (window.Settings) {
-        set_defaults(window.Settings);
-        $(setup);
-    } else {
-        window.Settings = {};
-        $.get("settings.json")
-            .done(function(data) {
-                Settings = data;
-            })
-            .fail(function() {
-                console.log("No settings found, using defaults.");
-            })
-            .always(function() {
-                set_defaults(window.Settings);
-                $(setup);
-            });
-    }
+    
+    window.BitcoinChecker = BitcoinChecker;
+    $(function(){Bitcoin.setup()});
+    
 })();

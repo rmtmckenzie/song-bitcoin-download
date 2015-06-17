@@ -1298,7 +1298,7 @@ Adapted from :
 https://bitcointalk.org/index.php?topic=9838.msg762512#msg762512 : http://pastebin.com/B5r3P5Ny
 Thanks and rights belong to Joric https://bitcointalk.org/index.php?action=profile;u=24067
 
-Usage: check_address("the address") - return True if is address, False if is not.
+Usage: check_address_is_bitcoin("the address") - return True if is address, False if is not.
 */
 
 BigInteger.prototype.toByteArrayUnsigned = function () {
@@ -1313,7 +1313,7 @@ BigInteger.prototype.toByteArrayUnsigned = function () {
         return ba;
 };        
 
-var check_address;
+var check_address_is_bitcoin;
 (function () {
     var Bitcoin = {};
     var B58 = Bitcoin.Base58 = {
@@ -1360,7 +1360,7 @@ var check_address;
             throw "Version " + version + " not supported!";
         return hash;
     };
-    check_address = function (address) {
+    check_address_is_bitcoin = function (address) {
         try {
             Bitcoin.Address(address);
             return true;
