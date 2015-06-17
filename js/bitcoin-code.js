@@ -21,27 +21,43 @@
         }, time);
     }
     
-    var nothing = function(){};
+    var Settings = {
+        download_button: "#song-download-button",
+        play_button: "#song-play-button",
+        address_input: "#bitcoin-donator-address",
+        earliest_date: "2015-06-01",
+        download_location: "http://freedownloads.last.fm/download/626522452/Flow.mp3",
+        donate_address: "1PZ5ebvdt43dvRRgRNgBhsq2PwAKN4X6W"
+    }
  
     var BitcoinChecker = {
-        addressInvalid: nothing,
-        addressValid: nothing,
-        downloadEnabled: nothing,
-        downloadDisabled: nothing,
-        downloadClicked: nothing
-    }
-    
-    BitcoinChecker = {
-        addressInvalid: function() {console.log("invalid");},
-        addressValid: function() {console.log("valid");},
-        downloadEnabled: function() {console.log("enabled");},
-        downloadDisabled: function() {console.log("disabled");},
-        downloadClicked: function() {console.log("clicked");}
+        addressInvalid: function() {
+            $(Settings.download_button).addClass("no-address");
+            $(Settings.address_input).addClass("invalid").removeClass("valid");
+        },
+        addressValid: function() {
+            $(Settings.download_button).removeClass("no-address");
+            $(Settings.address_input).removeClass("invalid").addClass("valid");
+        },
+        downloadEnabled: function() {
+            $(Settings.download_button)
+                .removeClass("no-address")
+                .removeAttr("disabled");
+        },
+        downloadDisabled: function() {
+            $(Settings.download_button)
+                .attr("disabled","true");
+        },
+        downloadClicked: function() {
+            //window.location.href = Settings.download_location;
+            alert("The song would start downloading now on the real site.")
+        }
     }
     
     var Bitcoin = {
         setup: function() {
             var _this = this;
+            this.address_valid = true; // force to set invalid on first entry
             $(Settings.address_input).on("input", function() {
                 var val = $(this).val();
                 if(check_address_is_bitcoin(val)) {
@@ -58,8 +74,6 @@
         addressValid: function(val) {
             this.address_valid = true;
             BitcoinChecker.addressValid();
-            $(Settings.address_input).removeClass("invalid").addClass("valid");
-            $(Settings.download_button).removeClass("no-address");
             clearInterval(this.timed_task); // in case go from valid to valid
             this.findAddrInAllTransactions(val);
         },
@@ -67,8 +81,6 @@
             if (this.address_valid) {
                 this.address_valid = false;
                 BitcoinChecker.addressInvalid();
-                $(Settings.address_input).addClass("invalid").removeClass("valid");
-                $(Settings.download_button).addClass("no-address");
                 this.disableDownload();
                 clearInterval(this.timed_task);
             }
@@ -77,13 +89,9 @@
             this.download_enabled = true;
             BitcoinChecker.downloadEnabled();
             $(Settings.download_button)
-                .removeClass("no-address")
-                .removeAttr("disabled")
                 .click(function(e) {
                     e.preventDefault();  //stop the browser from following
                     BitcoinChecker.downloadClicked();
-                    //window.location.href = Settings.download_location;
-                    alert("The song would start downloading now on the real site.")
                 });
         },
         disableDownload: function() {
@@ -92,7 +100,6 @@
                 BitcoinChecker.downloadDisabled();
                 $(Settings.download_button)
                     .off("click")
-                    .attr("disabled","true");
             }
         },
         isBeforeEarliest: function(transactions) {
